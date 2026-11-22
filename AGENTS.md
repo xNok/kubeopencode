@@ -382,7 +382,7 @@ Three-tier strategy: unit (`make test`), integration (`make integration-test`, u
 
 ## Project Status
 
-- **Version**: v0.1.9
+- **Version**: v0.2.0
 - **API Stability**: v1alpha1 (subject to change)
 - **License**: MIT License
 
