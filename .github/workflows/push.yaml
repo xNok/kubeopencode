@@ -12,6 +12,7 @@ on:
       - "**/*.md"
       - "LICENSE"
       - ".gitignore"
+  workflow_dispatch:
 
 env:
   GO_VERSION: "1.26"
@@ -25,14 +26,19 @@ jobs:
     name: Detect Changes
     runs-on: ubuntu-latest
     outputs:
-      kubeopencode: ${{ steps.filter.outputs.kubeopencode }}
-      agent-opencode: ${{ steps.filter.outputs.agent-opencode }}
-      agent-devbox: ${{ steps.filter.outputs.agent-devbox }}
-      agent-attach: ${{ steps.filter.outputs.agent-attach }}
-      helm: ${{ steps.filter.outputs.helm }}
+      kubeopencode: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.kubeopencode == 'true' }}
+      agent-opencode: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.agent-opencode == 'true' }}
+      agent-devbox: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.agent-devbox == 'true' }}
+      agent-attach: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.agent-attach == 'true' }}
+      helm: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.helm == 'true' }}
+      org: ${{ steps.org.outputs.org }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+
+      - name: Extract image org
+        id: org
+        run: echo "org=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
       - name: Check for changes
         uses: dorny/paths-filter@v4
@@ -161,6 +167,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, unit-test, integration-test, e2e-test]
     if: needs.changes.outputs.kubeopencode == 'true'
+    env:
+      IMG_ORG: ${{ needs.changes.outputs.org }}
     permissions:
       contents: read
       packages: write
@@ -216,6 +224,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, unit-test, integration-test, e2e-test]
     if: needs.changes.outputs.agent-opencode == 'true'
+    env:
+      IMG_ORG: ${{ needs.changes.outputs.org }}
     permissions:
       contents: read
       packages: write
@@ -260,6 +270,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, unit-test, integration-test, e2e-test]
     if: needs.changes.outputs.agent-devbox == 'true'
+    env:
+      IMG_ORG: ${{ needs.changes.outputs.org }}
     permissions:
       contents: read
       packages: write
@@ -299,6 +311,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, unit-test, integration-test, e2e-test]
     if: needs.changes.outputs.agent-attach == 'true' || needs.changes.outputs.agent-opencode == 'true'
+    env:
+      IMG_ORG: ${{ needs.changes.outputs.org }}
     permissions:
       contents: read
       packages: write
@@ -337,6 +351,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [changes, unit-test, integration-test, e2e-test]
     if: needs.changes.outputs.helm == 'true'
+    env:
+      IMG_ORG: ${{ needs.changes.outputs.org }}
     permissions:
       contents: read
       packages: write
@@ -356,4 +372,4 @@ jobs:
         run: |
           mkdir -p dist
           helm package charts/kubeopencode -d dist/
-          helm push dist/kubeopencode-*.tgz oci://ghcr.io/kubeopencode/helm-charts
+          helm push dist/kubeopencode-*.tgz oci://ghcr.io/${{ env.IMG_ORG }}/helm-charts
