@@ -1669,15 +1669,19 @@ func buildPod(task *kubeopenv1alpha1.Task, podName string, cfg agentConfig, cont
 		// future human-in-the-loop workflows (resuming sessions by title).
 		sessionTitle := sessionTitle(task)
 		if serverURL != "" {
-			// agentRef path: use --attach flag to connect to the Agent's OpenCode server.
+			// agentRef path: connect to the Agent's OpenCode server.
+			// OpenCode 2.x uses --server flag, while OpenCode 1.x uses --attach.
+			// We check --server support at runtime to ensure dual compatibility.
 			// Tasks are non-interactive — all permissions are auto-allowed via
 			// OPENCODE_PERMISSION env var on the server, so no permission.asked
 			// events are generated. This gives natural OpenCode TUI-style output
 			// in pod logs.
 			// For interactive sessions, users use `opencode attach` directly.
+			escapedTitle := shellEscape(sessionTitle)
 			agentCommand = []string{
 				"sh", "-c",
-				fmt.Sprintf(`%s; /tools/opencode run --attach %s --title %s "$(cat %s/task.md)"`, OpenCodeSymlinkCmd, serverURL, shellEscape(sessionTitle), cfg.workspaceDir),
+				fmt.Sprintf(`%s; if /tools/opencode run --help 2>&1 | grep -q -- '--server'; then /tools/opencode run --server %s --title %s "$(cat %s/task.md)"; else /tools/opencode run --attach %s --title %s "$(cat %s/task.md)"; fi`,
+					OpenCodeSymlinkCmd, serverURL, escapedTitle, cfg.workspaceDir, serverURL, escapedTitle, cfg.workspaceDir),
 			}
 		} else {
 			// templateRef path: run standalone OpenCode instance.

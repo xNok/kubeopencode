@@ -2046,9 +2046,12 @@ func TestBuildPod_AgentRef_WithAttachCommand(t *testing.T) {
 		t.Errorf("Container.Command[1] = %q, want %q", container.Command[1], "-c")
 	}
 
-	// Verify the command includes --attach and serverURL
+	// Verify the command includes --attach, --server, and serverURL
 	if !strings.Contains(container.Command[2], "--attach") {
 		t.Errorf("Command should contain --attach flag")
+	}
+	if !strings.Contains(container.Command[2], "--server") {
+		t.Errorf("Command should contain --server flag for OpenCode 2.x support")
 	}
 	if !strings.Contains(container.Command[2], serverURL) {
 		t.Errorf("Command should contain server URL: %s", serverURL)

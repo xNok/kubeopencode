@@ -28,8 +28,9 @@ const (
 	DefaultServerPort int32 = 4096
 
 	// ServerHealthPath is the path used for readiness probes.
-	// In OpenCode 2.x, /api/info returns 200 without requiring authentication.
-	ServerHealthPath = "/api/info"
+	// OpenCode's /session/status endpoint returns 200 without requiring authentication
+	// on both OpenCode 1.x and OpenCode 2.x.
+	ServerHealthPath = "/session/status"
 
 	// ServerSessionPVCSuffix is appended to Agent name for the session PVC name.
 	ServerSessionPVCSuffix = "-server-sessions"
