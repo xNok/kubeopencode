@@ -50,6 +50,7 @@ const sidebars: SidebarsConfig = {
         'operations/troubleshooting',
         'operations/releasing',
         'operations/upgrading',
+        'operations/opencode-2.x-migration',
       ],
     },
     'roadmap',

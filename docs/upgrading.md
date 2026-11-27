@@ -108,7 +108,7 @@ This section tracks which releases include CRD changes, so operators know when m
 
 | Version | CRD Changes | Description |
 |---------|-------------|-------------|
-| v0.2.0  | No          | Support OpenCode 2.x protocol, hermetic Nix developer environment, and Go tool integration |
+| v0.2.0  | No          | Support OpenCode 2.x protocol, hermetic Nix developer environment, and Go tool integration. See [OpenCode 2.x Migration Guide](opencode-2.x-migration.md) for dual-version support and agent migration details. |
 | v0.1.9  | Yes         | Added optional `annotations` field to `AgentPodSpec` in Agent/AgentTemplate CRDs for pod template annotations (e.g., ConfigMap/Secret checksums to trigger rollouts, annotation-based tooling integration) |
 | v0.0.28 | Yes         | Added `status.session` fields (sessionID, url) to Task CRD for OpenCode session integration |
 | v0.0.27 | Yes         | Added `extraVolumes` and `extraVolumeMounts` fields to `AgentPodSpec` in Agent/AgentTemplate CRDs |

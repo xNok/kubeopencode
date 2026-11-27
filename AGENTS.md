@@ -349,6 +349,7 @@ Three-tier strategy: unit (`make test`), integration (`make integration-test`, u
 | `website/docs/security.md` | RBAC, credentials |
 | `website/docs/architecture.md` | System design, API reference |
 | `docs/troubleshooting.md` | Common issues |
+| `docs/opencode-2.x-migration.md` | OpenCode protocol/agent migration |
 | `charts/kubeopencode/README.md` | Helm values |
 | `AGENTS.md` | API changes (also update inline godoc) |
 
